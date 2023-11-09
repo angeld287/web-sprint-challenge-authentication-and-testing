@@ -28,16 +28,16 @@ function getUserByNamePass(userName, hashPassword) {
   return db("users as u").where({
     "u.username": userName,
     "u.password": hashPassword
-  }).first().then(projects => {
-    return projects;
+  }).first().then(user => {
+    return user;
   });
 }
 
 function getUserByName(userName) {
     return db("users as u").where({
       "u.username": userName
-    }).first().then(projects => {
-      return projects;
+    }).first().then(user => {
+      return user;
     });
   }
 

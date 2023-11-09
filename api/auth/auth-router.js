@@ -50,7 +50,7 @@ router.post('/register', async (req, res) => {
       res.status(200).json(newUser);
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -81,12 +81,15 @@ router.post('/login', (req, res) => {
         return res.status(400).json({ message: 'username and password required'}); 
       }
 
-      const salt = bcrypt.genSaltSync(10);
-      const hashedPassword = bcrypt.hashSync(password, salt);
-      
-      const user = getUserByNamePass(username, hashedPassword);
+      const user = await getUserByName(username);
 
       if(!user){
+        return res.status(400).json({ message: 'invalid credentials'}); 
+      }
+
+      const result = bcrypt.compareSync(password, user.password);
+
+      if(!result){
         return res.status(400).json({ message: 'invalid credentials'}); 
       }
 
