@@ -1,7 +1,9 @@
-const router = require('express').Router();
+const { getUserByNamePass, getUserByName, createNewUser, generateToken } = require('./auth-model');
 
-router.post('/register', (req, res) => {
-  res.end('implement register, please!');
+const router = require('express').Router();
+var bcrypt = require('bcryptjs');
+
+router.post('/register', async (req, res) => {
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -27,10 +29,28 @@ router.post('/register', (req, res) => {
     4- On FAILED registration due to the `username` being taken,
       the response body should include a string exactly as follows: "username taken".
   */
+
+      const { username, password } = req.body;
+      
+
+      if(!username || !password){
+        return res.status(400).json({ message: 'username and password required'}); 
+      }
+
+      const user = await getUserByName(username);
+      if(user){
+         return res.status(400).json({ message: 'the username is already used'});
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(password, salt);
+      
+      const newUser = await createNewUser({username, password: hashedPassword});
+
+      res.status(200).json(newUser);
 });
 
 router.post('/login', (req, res) => {
-  res.end('implement login, please!');
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -54,6 +74,26 @@ router.post('/login', (req, res) => {
     4- On FAILED login due to `username` not existing in the db, or `password` being incorrect,
       the response body should include a string exactly as follows: "invalid credentials".
   */
+
+      const { username, password } = req.body;
+
+      if(!username || !password){
+        return res.status(400).json({ message: 'username and password required'}); 
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(password, salt);
+      
+      const user = getUserByNamePass(username, hashedPassword);
+
+      if(!user){
+        return res.status(400).json({ message: 'invalid credentials'}); 
+      }
+
+      res.status(200).json({ 
+        message: `welcome, ${username}`,
+        token: generateToken(user)
+      }); 
 });
 
 module.exports = router;
