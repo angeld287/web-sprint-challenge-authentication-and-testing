@@ -20,9 +20,7 @@ module.exports = (req, res, next) => {
       return res.status(400).json({ message: 'token required'}); 
     }
 
-    const splitedToken = token.split(' ')[1];
-
-    jwt.verify(splitedToken,'secret_key',(err,user) => {
+    jwt.verify(token,'secret_key',(err,user) => {
         console.log(err);
 
         if (err) return res.status(403).json("token invalid")

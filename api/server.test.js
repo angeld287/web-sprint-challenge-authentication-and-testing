@@ -58,12 +58,12 @@ describe('server.js', () => {
       test('[1] return 200 when token is valid', async () => {
         const user = await request(server).post('/api/auth/login').send({ username: 'angel', password: 'angel' })
 
-        const res = await request(server).get('/api/jokes').set('Authorization', `Bearer ${user.body.token}`)
+        const res = await request(server).get('/api/jokes').set('Authorization', `${user.body.token}`)
         expect(res.status).toBeGreaterThanOrEqual(200);
       }, 750)
 
       test('[2] return 400 when token is invalid', async () => {
-        const res = await request(server).get('/api/jokes').set('Authorization', `Bearer 21321`)
+        const res = await request(server).get('/api/jokes').set('Authorization', `21321`)
         expect(res.status).toBeGreaterThanOrEqual(400);
       }, 750)
     })
