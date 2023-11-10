@@ -1,4 +1,4 @@
-const { getUserByNamePass, getUserByName, createNewUser, generateToken } = require('./auth-model');
+const { getUserByName, createNewUser, generateToken } = require('./auth-model');
 
 const router = require('express').Router();
 var bcrypt = require('bcryptjs');
@@ -39,7 +39,7 @@ router.post('/register', async (req, res) => {
 
       const user = await getUserByName(username);
       if(user){
-         return res.status(400).json({ message: 'the username is already used'});
+         return res.status(400).json({ message: 'username taken'});
       }
 
       const salt = bcrypt.genSaltSync(10);
